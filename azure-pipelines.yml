@@ -1,0 +1,30 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+- group: databricks-secrets
+
+steps:
+- checkout: self
+
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.x'
+
+- script: |
+    pip install databricks-cli
+  displayName: 'Install Databricks CLI'
+
+- script: |
+    databricks configure --token <<EOF
+    $(DATABRICKS_HOST)
+    $(DATABRICKS_TOKEN)
+    EOF
+  displayName: 'Configure Databricks CLI'
+
+- script: |
+    databricks workspace import_dir notebooks /Users/caxnlpaid@outlook.com/Prod --overwrite
+  displayName: 'Deploy to Databricks Prod path'
